@@ -7,9 +7,11 @@ from django.http import HttpResponse
 
 def index(request):
      
-  
-    return 
+    context = RequestContext(request)
+    context_dict = {"boldmessage": " i am bold font from the context"}
+    
+    return render_to_response('rango/index.html',context_dict,context)
 
 def about(request):
-    return HttpResponse("Rango says: Here is about page...  <a href = '/rango/index'>Index</a>")
+    return HttpResponse("Rango says: Here is about page...  <a href = '/rango'>Index</a>")
 
