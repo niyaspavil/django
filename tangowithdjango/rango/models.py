@@ -10,9 +10,9 @@ class Category(models.Model):
 
 class page(models.Model):
 
-    category = model.ForiegnKey(Catogory)
+    category = models.ForeignKey(Category)
     title = models.CharField(max_length = 128)
-    url = models.UrlField()
+    url = models.URLField()
     views = models.IntegerField(default=0)
   
     def __unicode__(self):
