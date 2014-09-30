@@ -4,6 +4,9 @@ from django.shortcuts import render_to_response
 
 from django.http import HttpResponse
 
+# import rango model
+
+from rango.models import Category
 
 def index(request):
      
