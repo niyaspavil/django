@@ -6,8 +6,7 @@ from django.http import HttpResponse
 
 # import rango model
 
-from rango.models import Category
-
+from rango.models import Category,Page
 def index(request):
      
     context = RequestContext(request)
@@ -24,4 +23,23 @@ def about(request):
     
     return render_to_response('rango/about.html',context_dict,context)
 
+def category(request, category_name_url):
 
+    context = RequestContext(request)
+
+    category_name = catogory_name_url.replace('_',' ')
+
+    context_dict = {'category_name': category_name}
+
+    try:
+	
+	category = Category.object,get(name = category_name)
+	pages = Page.object.filter(category=category)
+	
+	context_dict ['pages'] = pages
+
+	context_dict ['category'] = category
+  
+    except Category.DoesNotExist:
+	pass
+    return render_to_response('rango/category.html', context_dict, context)
