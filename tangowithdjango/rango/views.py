@@ -11,7 +11,9 @@ from rango.models import Category
 def index(request):
      
     context = RequestContext(request)
-    context_dict = {"boldmessage": " i am bold font from the context"}
+    
+    category_list = Catogory.objects.order('likes')[:5]
+    context_dict = {"categories": category_list}
     
     return render_to_response('rango/index.html',context_dict,context)
 
