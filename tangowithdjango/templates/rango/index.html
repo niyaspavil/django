@@ -12,7 +12,8 @@
 
     <body>
         <h1>Rango says....hello world! </h1>
-	        
+	<div>
+	<div>        
 	{%if categories%}
 	    <ul>
 		{% for category in categories %}
@@ -23,8 +24,20 @@
 	    <strong> There is no categories present. </strong>
 
 	{% endif%}
+	</div>
+	</div>
+	{%if pages%}
+	    <ul>
+		{% for page in pages %}
+                <li>{{ page.title }} ({{page.views}})</li>
+ 		{% endfor%}
+	    </ul>
+	{% else %}
+	    <strong> There is no pageses present. </strong>
 
-
+	{% endif%}
+	</div>
+	</div>
         <a href="/rango/about">About</a><br />
 	<img src="{% static "rango.jpg" %}" alt="Picture of Rango" /> <!-- New line -->
     </body>

@@ -16,7 +16,7 @@ def index(request):
     
     page_list = Page.objects.order_by("-views")[:5]
     
-    context_dict = {"pages" : page_list}
+    context_dict ["pages"] = page_list
 
     for category in category_list:
 	category.url = category.name.replace(" ", "_")
