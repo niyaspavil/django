@@ -4,9 +4,15 @@ from django.shortcuts import render_to_response
 
 from django.http import HttpResponse
 
+
+
 # import rango model
 
 from rango.models import Category,Page
+
+# import rango forms
+
+from rango.forms import CategoryForms, PageForms
 def index(request):
      
     context = RequestContext(request)
