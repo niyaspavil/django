@@ -1,9 +1,7 @@
-from django.shortcuts import render
+from django.contrib.auth import authenticate, login
 from django.template import RequestContext
 from django.shortcuts import render_to_response
-
-from django.http import HttpResponse
-
+from django.http import HttpResponseRedirect, HttpResponse
 
 
 # import rango model
@@ -48,7 +46,7 @@ def category(request, category_name_url):
     try:
 
         category = Category.objects.get(name=category_name)
-        pages = Page.objects.filter(category=category)
+        pages = PageForms.objects.filter(category=category)
 
         context_dict['category_name_url'] = category.name
         context_dict['pages'] = pages
@@ -154,3 +152,29 @@ def register(request):
             'rango/register.html',
             {'user_form':user_form,'profile_form':profile_form,
             'registered':registered}, context)
+
+def user_login(request):
+
+    context = RequestContext(request)
+
+    if request.method == 'POST':
+
+        username = request.POST['username']
+        password = request.POST['password']
+
+        user = authenticate(username=username, password=password)
+        if user:
+            if user.is_active:
+                login(request,user)
+                return HttpResponseRedirect('/rango/')
+            else:
+                return HttpResponse('Your rango account is disabled')
+        else:
+            print('invalid login details {0}, {1}'.format(username, password))
+            return HttpResponse("invalid login details supplied")
+
+    else:
+        return render_to_response('rango/login.html',{},context)
+
+
+
