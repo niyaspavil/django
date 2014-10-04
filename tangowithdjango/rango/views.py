@@ -1,8 +1,8 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
-
+from django.contrib.auth.decorators import login_required
 
 # import rango model
 
@@ -46,7 +46,7 @@ def category(request, category_name_url):
     try:
 
         category = Category.objects.get(name=category_name)
-        pages = PageForms.objects.filter(category=category)
+        pages = Page.objects.filter(category=category)
 
         context_dict['category_name_url'] = category.name
         context_dict['pages'] = pages
@@ -176,5 +176,13 @@ def user_login(request):
     else:
         return render_to_response('rango/login.html',{},context)
 
+@login_required
+def restricted(request):
+    return HttpResponse("Since you're logged in, you can see this text!")
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect('/rango/')
 
 

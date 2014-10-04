@@ -6,9 +6,9 @@
 
     <head>
         <title>Rango</title>
-	<link rel="stylesheet" href="{% static 'css/base.css' %}" />  <! -- css -->
-	<script src="{%static 'js/jquery.js' %}"> </script>   <! -- java script -- >
-    <head>
+	    <link rel="stylesheet" href="{% static 'css/base.css' %}" />  <! -- css -->
+	    <script src="{%static 'js/jquery.js' %}"> </script>   <! -- java script -- >
+    </head>
 
     <body>
         {% if user.is_authenticated %}
@@ -16,38 +16,47 @@
         {%else%}
             <h1>Rango says....hello world! </h1>
         {% endif %}
-	<div>
-	<div>
-	{%if categories%}
-	    <ul>
-		{% for category in categories %}
-                <li><a href="category/{{ category.url }}">{{ category.name }}</a></li>
- 		{% endfor%}
-	    </ul>
-	{% else %}
-	    <strong> There is no categories present. </strong>
+        <div>
+            <div>
+                {%if categories%}
+                <ul>
+                    {% for category in categories %}
+                    <li><a href="category/{{ category.url }}">{{ category.name }}</a></li>
+                    {% endfor%}
+                </ul>
+                {% else %}
+                <strong> There is no categories present. </strong>
 
-	{% endif%}
-	</div>
-	</div>
-	{%if pages%}
-	    <ul>
-		{% for page in pages %}
+                {% endif%}
+            </div>
+
+            <div>
+                {%if pages%}
+                <ul>
+                {% for page in pages %}
                 <li>{{ page.title }} ({{page.views}})</li>
- 		{% endfor%}
-	    </ul>
-	{% else %}
-	    <strong> There is no pageses present. </strong>
+                {% endfor%}
+                </ul>
+                {% else %}
+                <strong> There is no pageses present. </strong>
 
-	{% endif%}
-	</div>
-	</div>
+                {% endif%}
+            </div>
+            <div>
+                {% if user.is_authenticated %}
+                <a href="/rango/restricted/">Restricted Page</a><br />
+                <a href="/rango/logout/">Logout</a><br />
+                <a href="/rango/add_category/">Add a New Category</a><br />
 
-        <a href="/rango/about">About</a><br />
-	<img src="{% static "rango.jpg" %}" alt="Picture of Rango" /> <!-- New line -->
-	<a href="/rango/add_category/">Add a New Category</a>
-	<a href='/rango/register/'>Register Here</a>
-	<a href="/rango/login/">Login</a>
+                {% else %}
+                <a href="/rango/register/">Register Here</a><br />
+                <a href="/rango/login/">Login</a><br />
+
+                {% endif %}
+
+                <a href="/rango/about/">About</a><br/>
+            </div>
+        </div>
     </body>
-    </head>
+
 </html>
