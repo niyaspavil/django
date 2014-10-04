@@ -3,6 +3,7 @@ from django.template import RequestContext
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
+from datetime import datetime
 
 # import rango model
 
@@ -26,9 +27,17 @@ def index(request):
     for category in category_list:
         category.url = category.name.replace(" ", "_")
 
-    return render_to_response('rango/index.html', context_dict, context)
-
-
+    response =  render_to_response('rango/index.html', context_dict, context)
+    visits = int(request.COOKIES.get('visits', '0'))
+    if 'last_visit' in request.COOKIES:
+        last_visit = request.COOKIES['last_visit']
+        last_visit_time = datetime.strptime(last_visit[:-7],"%Y-%m-%d %H:%M:%S")
+        if (datetime.now() - last_visit_time).days > 0:
+            response.set_cookie('visits', visits+1)
+            response.set_cookie('last_visit', datetime.now())
+    else:
+        response.set_cookie('last_visit', datetime.now())
+    return response
 def about(request):
     context = RequestContext(request)
     context_dict = {"boldmessage": " i am bold font from the context"}
@@ -168,7 +177,7 @@ def user_login(request):
         if user:
             if user.is_active:
                 login(request,user)
-                return HttpResponseRedirect('/rango/')
+                return render_to_response('/rango/',{},context)
             else:
                 return HttpResponse('Your rango account is disabled')
         else:
