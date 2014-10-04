@@ -1,20 +1,11 @@
-<!DOCTYPE html >
-
-{% load static %} <!-- New line -->
-
-<html>
-
-    <head>
-        <title>Rango</title>
+{% extends 'rango/base.html' %}
+{% load static %}
 	<link rel="stylesheet" href="{% static "css/base.css" %}" />  <! -- css -->
 	<script src="{%static "js/jquery.js"%}"> </script>   <! -- java script -- >
-    <head>
 
-    <body>
+ {% block body_block %}
         <h1>Rango says.... </h1>
         Here is about page! <strong> {{ boldmessage }} </strong><br />
         <a href="/rango/">Home</a><br />
-	<img src="{% static "about-us.jpg" %}" width="700" height="600" alt="Picture of about us" /> <!-- New line -->
-    </body>
-
-</html> 
+	    <img src="{% static "about-us.jpg" %}" width="700" height="600" alt="Picture of about us" />
+ {% endblock %}

@@ -48,7 +48,7 @@ def category(request, category_name_url):
         category = Category.objects.get(name=category_name)
         pages = Page.objects.filter(category=category)
 
-        context_dict['category_name_url'] = category.name
+        context_dict['category_name_url'] = category_name_url
         context_dict['pages'] = pages
 
         context_dict['category'] = category
@@ -89,6 +89,7 @@ def decode_url(category_name_url):
 def add_page(request,category_name_url):
     context = RequestContext(request)
     category_name = decode_url(category_name_url)
+    print category_name_url+":"+category_name
     if request.method == 'POST':
         form = PageForms(request.POST)
 
@@ -109,6 +110,7 @@ def add_page(request,category_name_url):
             print form.errors
 
     else:
+        print("hello")
         form = PageForms()
 
     return render_to_response('rango/add_page.html',
