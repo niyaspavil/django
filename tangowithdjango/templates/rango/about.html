@@ -5,7 +5,8 @@
 
  {% block body_block %}
         <h1>Rango says.... </h1>
-        Here is about page! <strong> {{ boldmessage }} </strong><br />
-        <a href="/rango/">Home</a><br />
-	    <img src="{% static "about-us.jpg" %}" width="700" height="600" alt="Picture of about us" />
+         This is <strong> Rango's about page. </strong><br />
+         You've visited the site on {{visits}} occasion(s).<br/>
+          Here's a picture of Rango! <br/>
+	    <img src="{% static "rango.jpg" %}" alt="Picture of about us" />
  {% endblock %}

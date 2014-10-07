@@ -27,21 +27,26 @@ def index(request):
     for category in category_list:
         category.url = category.name.replace(" ", "_")
 
-    response =  render_to_response('rango/index.html', context_dict, context)
-    visits = int(request.COOKIES.get('visits', '0'))
-    if 'last_visit' in request.COOKIES:
-        last_visit = request.COOKIES['last_visit']
-        last_visit_time = datetime.strptime(last_visit[:-7],"%Y-%m-%d %H:%M:%S")
-        if (datetime.now() - last_visit_time).days > 0:
-            response.set_cookie('visits', visits+1)
-            response.set_cookie('last_visit', datetime.now())
+    if request.session.get('last_visit'):
+
+        last_visit_time = request.session.get('last_visit')
+        visits = request.session.get('visits','0')
+
+        if (datetime.now() - datetime.strptime(last_visit_time[:-7], "%Y-%m-%d %H:%M:%S")).days > 0:
+            request.session['visits'] = visits+1
+            request.session['last_visit'] = str(datetime.now())
     else:
-        response.set_cookie('last_visit', datetime.now())
-    return response
+        request.session['last_visit'] = str(datetime.now())
+        request.session['visits'] = 1
+
+    return render_to_response('rango/index.html', context_dict, context)
+
 def about(request):
     context = RequestContext(request)
-    context_dict = {"boldmessage": " i am bold font from the context"}
 
+    if request.session.get('visits'):
+        count = request.session.get('visits')
+        context_dict = {'visits' : count}
     return render_to_response('rango/about.html', context_dict, context)
 
 
@@ -176,8 +181,8 @@ def user_login(request):
         user = authenticate(username=username, password=password)
         if user:
             if user.is_active:
-                login(request,user)
-                return render_to_response('/rango/',{},context)
+                login(request, user)
+                return HttpResponseRedirect('/rango/')
             else:
                 return HttpResponse('Your rango account is disabled')
         else:
