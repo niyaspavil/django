@@ -5,35 +5,37 @@
 	    <script src="{%static 'js/jquery.js' %}"> </script>   <! -- java script -- >
 
 {% block body_block%}
-        {% if user.is_authenticated %}
-            <h1>Rango says... hello {{user.username}}!</h1>
-        {%else%}
-            <h1>Rango says....hello world! </h1>
-        {% endif %}
-        <div>
-            <div>
-                {%if categories%}
-                <ul>
-                    {% for category in categories %}
-                    <li><a href="category/{{ category.url }}">{{ category.name }}</a></li>
-                    {% endfor%}
-                </ul>
-                {% else %}
-                <strong> There is no categories present. </strong>
+<div class="hero-unit">
+    <h1>Ready to Rango</h1>
+    <p>Find, Add, Share and Rango usefull links and resources.</p>
+</div>
+<div class = "row-fluid">
+    <div class="span6">
+        <h2>Top Five categories</h2>
+        {%if categories%}
+        <ul>
+            {% for category in categories %}
+                <li><a href="category/{{ category.url }}">{{ category.name }}</a></li>
+            {% endfor%}
+        </ul>
+        {% else %}
+            <strong> There is no categories present. </strong>
 
-                {% endif%}
-            </div>
+        {% endif%}
+    </div>
 
-            <div>
-                {%if pages%}
-                <ul>
-                {% for page in pages %}
-                <li>{{ page.title }} ({{page.views}})</li>
-                {% endfor%}
-                </ul>
-                {% else %}
-                <strong> There is no pageses present. </strong>
+    <div class="span6">
+        <h2>Top Five pages</h2>
+        {%if pages%}
+        <ul>
+            {% for page in pages %}
+                <li><a href="{{ page.url}}">{{ page.title }}</a> - {{ page.category }} ({{ page.views }} view(s))</li>
+            {% endfor%}
+        </ul>
+        {% else %}
+            <strong> There is no pageses present. </strong>
 
-                {% endif%}
-            </div>
- {% endblock %}
+        {% endif%}
+    </div>
+</div>
+{% endblock %}
