@@ -27,8 +27,9 @@
                             {% if user.is_authenticated %}
                             <li class="navbar-text">Welcome {{user.username}}</li>
                             <li><a href="/rango/logout/">Logout</a></li>
+                            <li><a href="/rango/search/">Search</a></li>
                             {% else %}
-                            <li><a href="/rango/register/">Register Here</a></li></li>
+                            <li><a href="/rango/register/">Register</a></li></li>
                             <li><a href="/rango/login/">Login</a></li>
                             {% endif %}
                         </ul>
