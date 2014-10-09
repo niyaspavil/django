@@ -22,7 +22,8 @@ def index(request):
     context_dict = {"categories": category_list}
 
     page_list = Page.objects.order_by("-views")[:5]
-
+    cat_list = get_category_list()
+    context_dict['cat_list'] = cat_list
     context_dict["pages"] = page_list
 
     for category in category_list:
@@ -48,6 +49,8 @@ def about(request):
     if request.session.get('visits'):
         count = request.session.get('visits')
         context_dict = {'visits' : count}
+        cat_list = get_category_list()
+        context_dict['cat_list'] = cat_list
     return render_to_response('rango/about.html', context_dict, context)
 
 
@@ -57,7 +60,8 @@ def category(request, category_name_url):
     category_name = decode_url(category_name_url)
 
     context_dict = {'category_name': category_name}
-
+    cat_list = get_category_list()
+    context_dict['cat_list'] = cat_list
     try:
 
         category = Category.objects.get(name=category_name)
@@ -88,8 +92,8 @@ def add_category(request):
             print form.errors
     else:
         form = CategoryForms()
-
-    return render_to_response('rango/add_category.html', {'form': form}, context)
+    cat_list = get_category_list()
+    return render_to_response('rango/add_category.html', {'form': form, 'cat_list' : cat_list}, context)
 
 
 def decode_url(category_name_url):
@@ -127,10 +131,10 @@ def add_page(request,category_name_url):
     else:
         print("hello")
         form = PageForms()
-
+    cat_list = get_category_list()
     return render_to_response('rango/add_page.html',
             {'category_name_url':category_name_url,
-              'category_name':category_name, 'form':form},
+              'category_name':category_name, 'form':form, 'cat_list':cat_list},
             context)
 
 def register(request):
@@ -164,16 +168,17 @@ def register(request):
     else:
         user_form = UserForm()
         profile_form = UserProfileForm()
+    cat_list = get_category_list()
 
     return render_to_response(
             'rango/register.html',
-            {'user_form':user_form,'profile_form':profile_form,
-            'registered':registered}, context)
+            {'user_form': user_form, 'profile_form': profile_form,
+            'registered': registered, 'cat_list': cat_list}, context)
 
 def user_login(request):
 
     context = RequestContext(request)
-
+    cat_list = get_category_list()
     if request.method == 'POST':
 
         username = request.POST['username']
@@ -191,7 +196,7 @@ def user_login(request):
             return HttpResponse("invalid login details supplied")
 
     else:
-        return render_to_response('rango/login.html',{},context)
+        return render_to_response('rango/login.html',{'cat_list':cat_list},context)
 
 @login_required
 def restricted(request):
@@ -203,6 +208,7 @@ def user_logout(request):
     return HttpResponseRedirect('/rango/')
 def search(request):
     context = RequestContext(request)
+    cat_list = get_category_list()
     result_list = []
 
     if request.method == 'POST':
@@ -210,4 +216,7 @@ def search(request):
 
         if query:
             result_list = run_query(query)
-    return render_to_response('rango/search.html', {'result_list':result_list}, context)
+    return render_to_response('rango/search.html', {'result_list':result_list, 'cat_list':cat_list}, context)
+def get_category_list():
+    category_list = Category.objects.all()
+    return category_list
