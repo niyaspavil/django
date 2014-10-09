@@ -74,6 +74,12 @@ def category(request, category_name_url):
 
     except Category.DoesNotExist:
         pass
+    if request.method == 'POST':
+        query = request.POST['query'].strip()
+
+        if query:
+            result_list = run_query(query)
+        context_dict['result_list'] = result_list
     return render_to_response('rango/category.html', context_dict, context)
 
 
@@ -218,5 +224,8 @@ def search(request):
             result_list = run_query(query)
     return render_to_response('rango/search.html', {'result_list':result_list, 'cat_list':cat_list}, context)
 def get_category_list():
-    category_list = Category.objects.all()
+    category_list = Category.objects.order_by('-likes')
+    for category in category_list:
+        category.url = category.name.replace(" ", "_")
+
     return category_list
