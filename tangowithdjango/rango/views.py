@@ -1,13 +1,13 @@
 from django.contrib.auth import authenticate, login, logout
 from django.template import RequestContext
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 
 # import rango model
 
-from rango.models import Category, Page
+from rango.models import Category, Page, UserProfile,User
 from rango.bing_search import run_query
 from rango.bing_search import run_query
 # import rango forms
@@ -17,7 +17,6 @@ from rango.forms import CategoryForms, PageForms, UserForm, UserProfileForm
 
 def index(request):
     context = RequestContext(request)
-
     category_list = Category.objects.order_by('-likes')[:5]
     context_dict = {"categories": category_list}
 
@@ -66,7 +65,7 @@ def category(request, category_name_url):
 
         category = Category.objects.get(name=category_name)
         pages = Page.objects.filter(category=category)
-
+        pages = pages.order_by('-views')
         context_dict['category_name_url'] = category_name_url
         context_dict['pages'] = pages
 
@@ -85,9 +84,7 @@ def category(request, category_name_url):
 
 def add_category(request):
     context = RequestContext(request)
-
     if request.method == 'POST':
-        print "hello this is post"
         form = CategoryForms(request.POST)
 
         if form.is_valid():
@@ -114,7 +111,6 @@ def decode_url(category_name_url):
 def add_page(request,category_name_url):
     context = RequestContext(request)
     category_name = decode_url(category_name_url)
-    print category_name_url+":"+category_name
     if request.method == 'POST':
         form = PageForms(request.POST)
 
@@ -135,7 +131,6 @@ def add_page(request,category_name_url):
             print form.errors
 
     else:
-        print("hello")
         form = PageForms()
     cat_list = get_category_list()
     return render_to_response('rango/add_page.html',
@@ -150,8 +145,8 @@ def register(request):
 
     if request.method == 'POST':
 
-        user_form = UserForm(data=request.POST)
-        profile_form = UserProfileForm(data=request.POST)
+        user_form = UserForm(request.POST)
+        profile_form = UserProfileForm(request.POST)
 
         if user_form.is_valid() and profile_form.is_valid():
             user = user_form.save()
@@ -223,9 +218,68 @@ def search(request):
         if query:
             result_list = run_query(query)
     return render_to_response('rango/search.html', {'result_list':result_list, 'cat_list':cat_list}, context)
-def get_category_list():
-    category_list = Category.objects.order_by('-likes')
-    for category in category_list:
+def get_category_list(max_results =0, starts_with=''):
+    cat_list=[]
+    if starts_with:
+        cat_list = Category.objects.filter(name__istartswith=starts_with)
+    else:
+        cat_list = Category.objects.all()
+    if max_results > 0:
+        if len(cat_list) > max_results:
+            cat_list = cat_list[:max_results]
+    for category in cat_list:
         category.url = category.name.replace(" ", "_")
+    print cat_list
+    return cat_list
+@login_required
+def profile(request):
+    context = RequestContext(request)
+    cat_list = get_category_list()
+    context_dict = {"cat_list":cat_list}
 
-    return category_list
+    u = User.objects.get(username=request.user)
+    try:
+        up = UserProfile.objects.get(user=u)
+    except:
+        up = None
+    context_dict["user"] = u
+    context_dict["userprofile"] = up
+
+    return render_to_response('rango/profile.html', context_dict, context)
+def track_url(request):
+    page_id = None
+    url = '/rango/'
+
+    if request.method == 'GET':
+        if 'page_id' in request.GET:
+            page_id = request.GET['page_id']
+            try:
+                page = Page.objects.get(id=page_id)
+                page.views = page.views + 1
+                page.save()
+                url= page.url
+            except:
+                pass
+    return redirect(url)
+@login_required
+def like_category(request):
+    cat_id = None
+    if request.method == 'GET':
+        cat_id = request.GET['category_id']
+    likes = 0
+    if cat_id:
+        category = Category.objects.get(id=int(cat_id))
+        if category:
+            likes = category.likes + 1
+            category.likes = likes
+            category.save()
+    return HttpResponse(likes)
+
+def suggest_category(request):
+    context = RequestContext(request)
+    cat_list = []
+    start_with = ''
+    if request.method == 'GET':
+        start_with = request.GET['suggestion']
+    cat_list = get_category_list(8 , start_with)
+    return render_to_response('rango/category_list.html', {'cat_list':cat_list}, context)
