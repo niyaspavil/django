@@ -12,3 +12,4 @@ This is a website created as part of learning  python django. Here user browse t
     ->Each category should be accessible via a readable URL - for example, /rango/category/python.
     ->Only registered users will be able to search and add pages to categories. And so, visitors to the site should be able to register for an account.
 
+Website link:http://niyaspavil.pythonanywhere.com/rango/
